@@ -69,16 +69,16 @@
             left: 68%;
             font-weight: bold;
             display: flex;
-            /* Use flexbox for alignment */
+        
             align-items: center;
-            /* Center items vertically */
+        
         }
 
         #temperature {
             font-size: 48px;
             line-height: 1;
             margin-left: 10px;
-            /* Space between icon and temperature */
+            
         }
 
         .centi {
@@ -99,9 +99,25 @@
 
         .weather-icon {
             width: 100px;
-            /* Adjust size as needed */
+        
             vertical-align: middle;
-            /* Aligns the icon with the text */
+    
+        }
+
+        .weather-forecast {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .weather-forecast-day {
+            text-align: center;
+            font-size: 14px;
+            color: #3D446F;
+        }
+
+        .weather-forecast-icon {
+            width: 60px;
         }
     </style>
 </head>
@@ -123,11 +139,12 @@
                 <img id="weather-icon" class="weather-icon" src="" alt="Weather Icon">
                 <span id="temperature"></span><span class="centi">°C</span>
             </h2>
+            <div id="forecast" class="weather-forecast"></div>
         </form>
         <hr>
         <footer>
-            This project was coded by Sana Hamdard and is on <a href="https://github.com/SanaHamdard/Weather-web/blob/main/index.html"
-                target="_blank">GitHub</a> and
+            This project was coded by Sana Hamdard and is on <a
+                href="https://github.com/SanaHamdard/Weather-web/blob/main/index.html" target="_blank">GitHub</a> and
             <a href="https://sana-weather-info.netlify.app/" target="_blank">Hosted on Netlify</a>
         </footer>
     </div>
@@ -156,12 +173,37 @@
 
             temperatureElement.innerHTML = `${Math.round(temperature)}`;
             iconElement.src = `https://shecodes-assets.s3.amazonaws.com/api/weather/icons/${iconCode}.png`;
+
+            getForecast(city); 
         }
 
-        function searchCity(city) {
+        function updateForecast(response) {
+            let forecastHtml = "";
+            response.data.daily.forEach(function (day, index) {
+                if (index < 5) {
+                    forecastHtml += `
+                        <div class="weather-forecast-day">
+                            <div>${formatDay(day.time)}</div>
+                            <img src="https://shecodes-assets.s3.amazonaws.com/api/weather/icons/${day.condition.icon}.png" class="weather-forecast-icon" />
+                            <div><strong>${Math.round(day.temperature.maximum)}°</strong></div>
+                            <div>${Math.round(day.temperature.minimum)}°</div>
+                        </div>
+                    `;
+                }
+            });
+            document.querySelector("#forecast").innerHTML = forecastHtml;
+        }
+
+        function formatDay(timestamp) {
+            let date = new Date(timestamp * 1000);
+            let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            return days[date.getDay()];
+        }
+
+        function getForecast(city) {
             let apiKey = "3e2f10te1dfaabdoa5a21f650fadb497";
-            let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}&units=metric`;
-            axios.get(apiUrl).then(updateWeather);
+            let apiUrl = `https://api.shecodes.io/weather/v1/forecast?query=${city}&key=${apiKey}&units=metric`;
+            axios.get(apiUrl).then(updateForecast);
         }
 
         function formatDate(date) {
@@ -189,6 +231,12 @@
             event.preventDefault();
             let searchInput = document.querySelector("#search-form-input");
             searchCity(searchInput.value);
+        }
+
+        function searchCity(city) {
+            let apiKey = "3e2f10te1dfaabdoa5a21f650fadb497";
+            let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}&units=metric`;
+            axios.get(apiUrl).then(updateWeather);
         }
 
         let searchFormElement = document.querySelector("#inputForm");
