@@ -180,7 +180,7 @@
         function updateForecast(response) {
             let forecastHtml = "";
             response.data.daily.forEach(function (day, index) {
-                if (index < 5) {
+                if (index > 0 && index < 7) {
                     forecastHtml += `
                         <div class="weather-forecast-day">
                             <div>${formatDay(day.time)}</div>
