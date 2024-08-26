@@ -4,12 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" href="data:,">
+    <link rel="shortcut icon" href="data:,">
+    <link rel="apple-touch-icon" href="data:,">
+<link rel="icon"
+    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAB0lEQVR42mP8/wcAAwAB/Idt4IAAAAABJRU5ErkJggg==">
+<meta rel="icon"
+    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAB0lEQVR42mP8/wcAAwAB/Idt4IAAAAABJRU5ErkJggg==">
+
     <link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+    <link rel="icon" href="data:image/x-icon;,">
     <title>Weather Updates</title>
+
     <style>
         body {
             background-color: #5A7D9A;
@@ -59,7 +70,7 @@
 
         hr {
             border-bottom: 1px solid black;
-            padding: 0 0 0px 0;
+            padding: 0;
             opacity: 0.2;
         }
 
@@ -69,16 +80,13 @@
             left: 68%;
             font-weight: bold;
             display: flex;
-        
             align-items: center;
-        
         }
 
         #temperature {
             font-size: 48px;
             line-height: 1;
             margin-left: 10px;
-            
         }
 
         .centi {
@@ -99,9 +107,7 @@
 
         .weather-icon {
             width: 100px;
-        
             vertical-align: middle;
-    
         }
 
         .weather-forecast {
@@ -125,14 +131,12 @@
 <body>
     <div class="container">
         <form id="inputForm">
-            <input class="input-data" id="search-form-input" type="text" placeholder="Enter a city" required
-                list="cities">
-            <input class="submit-data" type="submit" value="search">
+            <input class="input-data" id="search-form-input" type="search" placeholder="Enter a city" required>
+            <input class="submit-data" type="submit" value="Search">
             <hr>
             <h1 id="city"></h1>
             <p>
-                <span id="time"></span>, <span id="clouds"></span>
-                <br>
+                <span id="time"></span>, <span id="clouds"></span><br>
                 Humidity: <strong id="humidity"></strong>, Wind: <strong id="speed"></strong>
             </p>
             <h2 class="main">
@@ -163,18 +167,15 @@
             let city = response.data.city;
             let iconCode = response.data.condition.icon;
 
-            let date = new Date();
-
             descriptionElement.innerHTML = response.data.condition.description;
             humidityElement.innerHTML = `${response.data.temperature.humidity}%`;
             speedElement.innerHTML = `${response.data.wind.speed} km/h`;
-            timeElement.innerHTML = formatDate(date);
             cityElement.innerHTML = city;
 
             temperatureElement.innerHTML = `${Math.round(temperature)}`;
             iconElement.src = `https://shecodes-assets.s3.amazonaws.com/api/weather/icons/${iconCode}.png`;
 
-            getForecast(city); 
+            getForecast(city);
         }
 
         function updateForecast(response) {
@@ -209,22 +210,24 @@
         function formatDate(date) {
             let minutes = date.getMinutes();
             let hours = date.getHours();
-            let days = [
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-            ];
+            let seconds = date.getSeconds();
+            let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             let day = days[date.getDay()];
 
             if (minutes < 10) {
                 minutes = `0${minutes}`;
             }
+            if (seconds < 10) {
+                seconds = `0${seconds}`;
+            }
 
-            return `${day} ${hours}:${minutes}`;
+            return `${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+        function updateTime() {
+            let timeElement = document.querySelector("#time");
+            let date = new Date();
+            timeElement.innerHTML = formatDate(date);
         }
 
         function handleSubmit(event) {
@@ -242,6 +245,7 @@
         let searchFormElement = document.querySelector("#inputForm");
         searchFormElement.addEventListener("submit", handleSubmit);
 
+        setInterval(updateTime, 1000);
         searchCity("Kabul");
     </script>
 </body>
